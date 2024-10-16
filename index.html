@@ -7,20 +7,22 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background: url('https://emonzyaku.com/wp-content/uploads/2020/11/cropped-topga9.png') no-repeat center center fixed;
+            background-size: cover;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            color: white;
         }
 
         .container {
             text-align: center;
-            background: white;
+            background: rgba(0, 0, 0, 0.7);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         #word {
@@ -50,6 +52,11 @@
             font-size: 2em;
             margin-bottom: 20px;
         }
+
+        #timer {
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -59,27 +66,46 @@
         <input type="text" id="input" autofocus disabled>
         <div id="score">スコア: <span id="scoreValue">0</span></div>
         <div id="message"></div>
+        <div id="timer">残り時間: <span id="timerValue">60</span>秒</div>
     </div>
     <script>
         const words = [
-            "yaa", "hin", "numa", "shinjaemon", "gasuoji",
-            "kassan", "katudonba-ga-", "katokon", "katoroido",
-            "kanie", "karehajoudanwoitteimasu", "kisekimo,mahoumo,arundayo",
-            "kinmo-", "kyarandolu", "owarittekotodayo", "jupi",
-            "delyun", "sattyan", "sinonomekimera", "mokoreinbo-"
+            { romaji: "yaa", kanji: "やあ" },
+            { romaji: "hin", kanji: "ひん" },
+            { romaji: "numa", kanji: "沼" },
+            { romaji: "shinjaemon", kanji: "信者衛門" },
+            { romaji: "gasuoji", kanji: "ガスおじ" },
+            { romaji: "kassan", kanji: "かっさん" },
+            { romaji: "katudonba-ga-", kanji: "カツどんバーガー" },
+            { romaji: "katokon", kanji: "カトコン" },
+            { romaji: "katoroido", kanji: "カトロイド" },
+            { romaji: "kanie", kanji: "蟹江" },
+            { romaji: "karehajoudanwoitteimasu", kanji: "彼は冗談を言っています" },
+            { romaji: "kisekimo,mahoumo,arundayo", kanji: "奇跡も、魔法も、あるんだよ" },
+            { romaji: "kinmo-", kanji: "キンモー" },
+            { romaji: "kyarandolu", kanji: "キャランドゥ" },
+            { romaji: "owarittekotodayo", kanji: "終わりってことだよ" },
+            { romaji: "jupi", kanji: "じゅぴ" },
+            { romaji: "delyun", kanji: "でゅん" },
+            { romaji: "sattyan", kanji: "さっちゃん" },
+            { romaji: "sinonomekimera", kanji: "しののめキメラ" },
+            { romaji: "mokoreinbo-", kanji: "モコレインボー" }
         ];
 
         let score = 0;
         let currentWord = '';
         let isGameActive = false;
+        let timeLeft = 60;
+        let timerInterval;
 
         function getRandomWord() {
             return words[Math.floor(Math.random() * words.length)];
         }
 
         function updateWord() {
-            currentWord = getRandomWord();
-            document.getElementById('word').innerText = currentWord;
+            const wordObj = getRandomWord();
+            currentWord = wordObj.romaji;
+            document.getElementById('word').innerText = wordObj.kanji;
             document.getElementById('input').value = '';
             document.getElementById('message').innerText = '';
         }
@@ -89,10 +115,26 @@
             document.getElementById('startMessage').style.display = 'none';
             document.getElementById('input').disabled = false;
             updateWord();
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timerValue').innerText = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    isGameActive = false;
+                    document.getElementById('message').innerText = '時間切れ！';
+                }
+            }, 1000);
         }
 
         document.addEventListener('keydown', function(event) {
             if (event.code === 'Space' && !isGameActive) {
+                timeLeft = 60; // Reset time
+                document.getElementById('timerValue').innerText = timeLeft;
                 startGame();
             }
         });
@@ -112,12 +154,14 @@
                 document.getElementById('scoreValue').innerText = score;
                 updateWord();
             } else if (input.length >= correctInput.length) {
-                // 間違えた場合、スコアを減らす
+                // 間違えた場合、次のワードに進む
                 score = Math.max(0, score - 1);
                 document.getElementById('scoreValue').innerText = score;
                 document.getElementById('message').innerText = '間違い！';
+                updateWord();
             }
         });
     </script>
 </body>
 </html>
+
