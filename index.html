@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タイピングゲーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #word {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+
+        input {
+            font-size: 1.5em;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #score {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: red;
+        }
+
+        #startMessage {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="startMessage">katotyper</div>
+        <div id="word"></div>
+        <input type="text" id="input" autofocus disabled>
+        <div id="score">スコア: <span id="scoreValue">0</span></div>
+        <div id="message"></div>
+    </div>
+    <script>
+        const words = [
+            "yaa", "hin", "numa", "shinjaemon", "gasuoji",
+            "kassan", "katudonba-ga-", "katokon", "katoroido",
+            "kanie", "karehajoudanwoitteimasu", "kisekimo,mahoumo,arundayo",
+            "kinmo-", "kyarandolu", "owarittekotodayo", "jupi",
+            "delyun", "sattyan", "sinonomekimera", "mokoreinbo-"
+        ];
+
+        let score = 0;
+        let currentWord = '';
+        let isGameActive = false;
+
+        function getRandomWord() {
+            return words[Math.floor(Math.random() * words.length)];
+        }
+
+        function updateWord() {
+            currentWord = getRandomWord();
+            document.getElementById('word').innerText = currentWord;
+            document.getElementById('input').value = '';
+            document.getElementById('message').innerText = '';
+        }
+
+        function startGame() {
+            isGameActive = true;
+            document.getElementById('startMessage').style.display = 'none';
+            document.getElementById('input').disabled = false;
+            updateWord();
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space' && !isGameActive) {
+                startGame();
+            }
+        });
+
+        document.getElementById('input').addEventListener('input', function() {
+            if (!isGameActive) return;
+
+            const input = this.value.trim();
+            const correctInput = currentWord.replace(/っ/g, 'xtu');
+
+            if (input === correctInput) {
+                if (currentWord.length > 10) {
+                    score += 5; // 長い文
+                } else {
+                    score += 1; // 通常の単語
+                }
+                document.getElementById('scoreValue').innerText = score;
+                updateWord();
+            } else if (input.length >= correctInput.length) {
+                // 間違えた場合、スコアを減らす
+                score = Math.max(0, score - 1);
+                document.getElementById('scoreValue').innerText = score;
+                document.getElementById('message').innerText = '間違い！';
+            }
+        });
+    </script>
+</body>
+</html>
