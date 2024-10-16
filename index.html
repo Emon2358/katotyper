@@ -111,6 +111,8 @@
         }
 
         function startGame() {
+            score = 0; // Reset score
+            timeLeft = 60; // Reset time
             isGameActive = true;
             document.getElementById('startMessage').style.display = 'none';
             document.getElementById('input').disabled = false;
@@ -126,16 +128,18 @@
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     isGameActive = false;
-                    document.getElementById('message').innerText = '時間切れ！';
+                    document.getElementById('message').innerText = '時間切れ！スペースキーで再スタート。';
                 }
             }, 1000);
         }
 
         document.addEventListener('keydown', function(event) {
-            if (event.code === 'Space' && !isGameActive) {
-                timeLeft = 60; // Reset time
-                document.getElementById('timerValue').innerText = timeLeft;
-                startGame();
+            if (event.code === 'Space') {
+                if (!isGameActive) {
+                    startGame();
+                } else {
+                    // 現在のゲーム中にスペースが押された場合の処理はない
+                }
             }
         });
 
@@ -164,4 +168,3 @@
     </script>
 </body>
 </html>
-
